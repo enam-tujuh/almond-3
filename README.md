@@ -23,6 +23,8 @@ npm run dev
 
 Then open `http://localhost:3000` in your browser. You should see the **Sentinel-Local Command Center** with controls for triggering audio, verifying video, simulating network failures, and viewing fused alerts.
 
+A **Sentinel Verification** tab runs in-browser at **http://localhost:3000/sentinel**: frame-by-frame human detection (TensorFlow.js COCO-SSD), square bounding boxes, looping scream audio, RMS-based danger trigger, and a red full-page alert when the audio threshold is exceeded. No backend required.
+
 ---
 
 ### Python backend setup
