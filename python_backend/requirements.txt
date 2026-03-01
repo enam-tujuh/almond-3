@@ -1,0 +1,9 @@
+tensorflow>=2.12
+tensorflow-hub
+librosa
+soundfile
+opencv-python
+ultralytics
+torch
+numpy
+python-dotenv
