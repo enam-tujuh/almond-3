@@ -1,9 +1,9 @@
-tensorflow>=2.12
-tensorflow-hub
+# Optional: for full YAMNet audio trigger (install when network allows)
+# tensorflow>=2.12
+# tensorflow-hub
 librosa
 soundfile
 opencv-python
 ultralytics
-torch
 numpy
 python-dotenv

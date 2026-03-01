@@ -23,8 +23,9 @@ export default function handler(req, res) {
   }
 
   const { input } = req.body || {};
-  const videoInput =
-    input || path.join("public", "sample_media", "sample_lowres.mp4");
+  const videoInput = input
+    ? path.resolve(process.cwd(), input)
+    : path.resolve(process.cwd(), "public", "sample_media", "sample_lowres.mp4");
 
   const pythonPath = getPythonPath();
   const visualScript = path.join(

@@ -55,6 +55,7 @@ def run_visual_verification(
     frame_count = 0
     thumbnails_dir = os.path.join("tmp", "thumbnails")
     ensure_dir(thumbnails_dir)
+    first_frame_saved = False
 
     while frame_count < max_frames:
       ret, frame = cap.read()
@@ -105,7 +106,32 @@ def run_visual_verification(
           }
         )
 
+      # If no person/weapon detected so far, save one "scene" thumbnail from the first frame
+      # so the UI always has something to show (privacy: full-frame blur or keep as scene context).
+      if not first_frame_saved and frame_count == 1:
+        first_frame_saved = True
+        det_id = f"scene-{int(datetime.now().timestamp())}"
+        thumbnail_rel = os.path.join("tmp", "thumbnails", f"{det_id}.jpg")
+        thumbnail_abs = os.path.join(os.getcwd(), thumbnail_rel.replace("/", os.sep))
+        ensure_dir(os.path.dirname(thumbnail_abs))
+        cv2.imwrite(thumbnail_abs, frame)
+        detections.append(
+          {
+            "id": det_id,
+            "timestamp_iso": datetime.now(timezone.utc).isoformat(),
+            "class": "scene",
+            "conf": 1.0,
+            "bbox": [0, 0, frame.shape[1], frame.shape[0]],
+            "thumbnail_path": thumbnail_rel.replace("\\", "/"),
+          }
+        )
+
     cap.release()
+
+    # If we only have the fallback "scene" and no person/weapon, keep that one.
+    # If we have any person/weapon detections, drop the scene so fused alert uses real detection.
+    if len(detections) > 1:
+      detections = [d for d in detections if d.get("class") != "scene"]
 
   os.makedirs(os.path.dirname(out_path), exist_ok=True)
   with open(out_path, "w", encoding="utf-8") as f:

@@ -23,8 +23,9 @@ export default function handler(req, res) {
   }
 
   const { input } = req.body || {};
-  const audioInput =
-    input || path.join("public", "sample_media", "sample_scream.wav");
+  const audioInput = input
+    ? path.resolve(process.cwd(), input)
+    : path.resolve(process.cwd(), "public", "sample_media", "sample_scream.wav");
 
   const pythonPath = getPythonPath();
   const scriptPath = path.join(
@@ -55,7 +56,12 @@ export default function handler(req, res) {
 
   child.on("close", () => {
     // After audio trigger completes, kick off visual verification + fusion.
-    const verifyUrl = path.join("public", "sample_media", "sample_lowres.mp4");
+    const videoInput = path.resolve(
+      process.cwd(),
+      "public",
+      "sample_media",
+      "sample_lowres.mp4",
+    );
     const visualScript = path.join(
       process.cwd(),
       "python_backend",
@@ -65,7 +71,7 @@ export default function handler(req, res) {
 
     const visualProc = spawn(
       pythonPath,
-      [visualScript, "--input", verifyUrl, "--out", visualOut, "--frames", "150"],
+      [visualScript, "--input", videoInput, "--out", visualOut, "--frames", "150"],
       {
         cwd: process.cwd(),
         shell: process.platform === "win32",
